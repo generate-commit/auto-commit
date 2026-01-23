@@ -25,9 +25,9 @@ jobs:
         run: |
           DAY=$(date +%j)
           if [ $((DAY % 2)) -eq 0 ]; then
-            COMMITS=11   # Juft kunlar
+            COMMITS=1234  # Juft kunlar
           else
-            COMMITS=22   # Toq kunlar
+            COMMITS=5678   # Toq kunlar
           fi
           echo "commits=$COMMITS" >> $GITHUB_OUTPUT
 
