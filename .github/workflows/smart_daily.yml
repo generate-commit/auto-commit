@@ -2,7 +2,7 @@ name: Daily 100 Commits
 
 on:
   schedule:
-    - cron: "0 0 * * *"   # Har kuni UTC 00:00
+    - cron: "0 0 * * *"
   workflow_dispatch:
 
 permissions:
@@ -14,6 +14,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: main   # ⚠️ AGAR master bo‘lsa, main → master qil
 
       - name: Setup Git
         run: |
@@ -29,4 +31,4 @@ jobs:
           done
 
       - name: Push changes
-        run: git push
+        run: git push origin HEAD:main
