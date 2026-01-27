@@ -1,0 +1,37 @@
+name: Daily 100 Commits
+
+on:
+  schedule:
+    - cron: "0 0 * * *"   # Har kuni UTC 00:00
+  workflow_dispatch:
+
+jobs:
+  auto-commit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main   # Agar repo default branch master bo‘lsa → master
+
+      - name: Setup Git
+        run: |
+          git config --global user.name "generate-commit"
+          git config --global user.email "generate-commit@users.noreply.github.com"
+
+      - name: Ensure file exists
+        run: touch activity-log.txt
+
+      - name: Make 100 commits
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
+        run: |
+          for i in $(seq 1 100); do
+            echo "$(date) commit $i" >> activity-log.txt
+            git add activity-log.txt
+            git commit -m "Auto commit $i ($(date +%F %T))" || echo "No changes"
+          done
+
+      - name: Push commits
+        run: git push https://$GH_PAT@github.com/generate-commit/auto-commit.git HEAD:main
