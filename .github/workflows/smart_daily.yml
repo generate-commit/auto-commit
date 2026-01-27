@@ -1,44 +1,37 @@
-name: Smart Daily Commits (UTC)
+name: Daily 100 Commits
 
 on:
   schedule:
-    - cron: "0 0 * * *"   # Har kuni UTC 00:00
+    - cron: "0 0 * * *"   # har kuni UTC 00:00
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
-  smart-commits:
+  auto-commit:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          ref: main   # agar master bo‘lsa → master
 
-      - name: Decide commit count (even=5, odd=6)
-        id: decide
+      - name: Setup Git
         run: |
-          DAY=$(date +%u)  # 1=Mon … 7=Sun
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          if [ $((DAY % 2)) -eq 0 ]; then
-            COUNT=5
-          else
-            COUNT=6
-          fi
+      - name: Ensure activity-log.txt exists
+        run: touch activity-log.txt
 
-          echo "count=$COUNT" >> $GITHUB_OUTPUT
-
-      - name: Make commits
-        env:
-          GH_PAT: ${{ secrets.GH_PAT }}
+      - name: Make 100 commits
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "generate-commit@users.noreply.github.com"
-
-          COUNT=${{ steps.decide.outputs.count }}
-
-          for i in $(seq 1 $COUNT); do
-            echo "Update $i: $(date -u)" >> activity-log.txt
+          for i in $(seq 1 100); do
+            echo "$(date) commit $i" >> activity-log.txt
             git add activity-log.txt
-            git commit -m "Auto commit $i (UTC $(date -u '+%H:%M:%S'))" || echo "No changes"
+            git diff --cached --quiet || git commit -m "Auto commit $i ($(date +%F %T))"
           done
 
-          git push https://$GH_PAT@github.com/generate-commit/auto-commit.git HEAD:main
+      - name: Push commits
+        run: git push origin HEAD:main
