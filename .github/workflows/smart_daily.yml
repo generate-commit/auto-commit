@@ -1,8 +1,8 @@
-name: Daily Auto Commit
+name: Daily 100 Commits
 
 on:
   schedule:
-    - cron: "0 1 * * *"   # Har kuni UTC 01:00
+    - cron: "0 0 * * *"   # Har kuni UTC 00:00
   workflow_dispatch:
 
 permissions:
@@ -20,22 +20,12 @@ jobs:
           git config user.name "auto-commit-bot"
           git config user.email "auto-commit-bot@users.noreply.github.com"
 
-      - name: Determine commit count
+      - name: Make 100 commits
         run: |
-          DAY=$(date +%j)
-          if [ $((DAY % 2)) -eq 0 ]; then
-            COUNT=1000   # juft kun
-          else
-            COUNT=1000   # toq kun
-          fi
-          echo "COUNT=$COUNT" >> $GITHUB_ENV
-
-      - name: Make commits
-        run: |
-          for i in $(seq 1 $COUNT); do
-            echo "$(date) auto commit $i" >> daily.txt
+          for i in $(seq 1 100); do
+            echo "$(date) commit $i" >> daily.txt
             git add daily.txt
-            git commit -m "auto: daily activity $(date +%F) #$i"
+            git commit -m "auto: daily commit #$i ($(date +%F))"
           done
 
       - name: Push changes
