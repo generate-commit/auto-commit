@@ -1,15 +1,15 @@
 name: Daily Auto Commit
 
 on:
-  workflow_dispatch:
   schedule:
-    - cron: "0 0 * * *"  # Har kuni UTC 00:00
+    - cron: "0 1 * * *"   # Har kuni UTC 01:00
+  workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
-  daily-commit:
+  auto-commit:
     runs-on: ubuntu-latest
 
     steps:
@@ -17,26 +17,26 @@ jobs:
 
       - name: Setup Git
         run: |
-          git config user.name "generate-commit"
-          git config user.email "generate-commit@users.noreply.github.com"
+          git config user.name "auto-commit-bot"
+          git config user.email "auto-commit-bot@users.noreply.github.com"
 
       - name: Determine commit count
-        id: commits
         run: |
           DAY=$(date +%j)
           if [ $((DAY % 2)) -eq 0 ]; then
-            COMMITS=12345  # Juft kunlar
+            COUNT=1000   # juft kun
           else
-            COMMITS=12345  # Toq kunlar
+            COUNT=1000   # toq kun
           fi
-          echo "commits=$COMMITS" >> $GITHUB_OUTPUT
+          echo "COUNT=$COUNT" >> $GITHUB_ENV
 
       - name: Make commits
         run: |
-          for i in $(seq 1 ${{ steps.commits.outputs.commits }}); do
-            echo "$(date) commit $i" >> daily.txt
+          for i in $(seq 1 $COUNT); do
+            echo "$(date) auto commit $i" >> daily.txt
             git add daily.txt
-            git commit -m "Daily auto commit $(date +%Y-%m-%d) #$i"
+            git commit -m "auto: daily activity $(date +%F) #$i"
           done
-          git push
 
+      - name: Push changes
+        run: git push
