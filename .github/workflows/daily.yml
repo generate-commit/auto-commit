@@ -23,7 +23,7 @@ jobs:
       - name: Ensure file exists
         run: touch activity-log.txt
 
-      - name: Make 100 commits
+      - name: Make 1000 commits
         env:
           GH_PAT: ${{ secrets.GH_PAT }}
         run: |
