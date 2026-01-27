@@ -1,4 +1,4 @@
-name: Daily 100 Commits
+name: Daily 1000 Commits
 
 on:
   schedule:
@@ -27,7 +27,7 @@ jobs:
         env:
           GH_PAT: ${{ secrets.GH_PAT }}
         run: |
-          for i in $(seq 1 100); do
+          for i in $(seq 1 1000); do
             echo "$(date) commit $i" >> activity-log.txt
             git add activity-log.txt
             git commit -m "Auto commit $i ($(date +%F %T))" || echo "No changes"
